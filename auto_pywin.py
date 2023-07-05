@@ -1,4 +1,5 @@
 from pywinauto.application import Application
+import win32gui
 from pywinauto import Desktop
 import threading,subprocess,base64,cv2,random,requests,pyautogui
 import os, time
@@ -73,25 +74,35 @@ def run_automation():
     pyautogui.click(start_x, start_y)
     time.sleep(50)
 
-    for i in range(5):
+    clone_window_lists = []
+    for x in pyautogui.getAllWindows():
+        if x.title.startswith('BlueStacks App'):
+            clone_window_lists.append(x.title)
+    print(clone_window_lists)
+
+    for clone_window_list in clone_window_lists:
+        nth_instance = clone_window_list.split(' ')[-1]
+        handle = win32gui.FindWindow(0, f'BlueStacks App Player {nth_instance}')
+        win32gui.SetForegroundWindow(handle)
+
         pyautogui.click(pyautogui.locateCenterOnScreen(f'{IMG_FOLDER}note_app.png'))
-        if i == 0:
-            time.sleep(8)
-        else:
-            time.sleep(4)
+        # if i == 0:
+        #     time.sleep(8)
+        # else:
+        #     time.sleep(4)
         pyautogui.click(pyautogui.locateCenterOnScreen(f'{IMG_FOLDER}link_view.png'))
-        time.sleep(3)
+        time.sleep(1)
 
         pyautogui.click(pyautogui.locateCenterOnScreen(f'{IMG_FOLDER}to_link_click.png'))
-        time.sleep(25)
 
-        pyautogui.click(pyautogui.locateCenterOnScreen(f'{IMG_FOLDER}agree_button.png'))
-        time.sleep(2)
+    time.sleep(10)
 
+    for clone_window_list in clone_window_lists:
         pyautogui.click(pyautogui.locateCenterOnScreen(f'{IMG_FOLDER}close_button.png'))
-        time.sleep(2)
+        time.sleep(1)
         pyautogui.click(pyautogui.locateCenterOnScreen(f'{IMG_FOLDER}close_instance.png', confidence=0.8))
         time.sleep(2)
+
 
 app = Application(backend='uia').start("C:\Program Files\BlueStacks_nxt\HD-MultiInstanceManager.exe", wait_for_idle=False)
 time.sleep(1)

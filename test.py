@@ -1,8 +1,13 @@
-from pywinauto.application import Application
-app = Application(backend="win32").start('notepad.exe').connect(title='Untitled - Notepad')
+import win32gui
+import pyautogui
 
-# describe the window inside Notepad.exe process
-dlg_spec = app.UntitledNotepad
-# wait till the window is really open
-actionable_dlg = dlg_spec.wait('visible')
-app.UntitledNotepad.print_control_identifiers()
+clone_window_list =[]
+for x in pyautogui.getAllWindows():
+    if x.title.startswith('BlueStacks App'):
+        clone_window_list.append(x.title)
+print(clone_window_list)
+# NUM = 590
+# handle = win32gui.FindWindow(0, f'BlueStacks App Player {NUM}')
+# win32gui.SetForegroundWindow(handle)
+
+print('BlueStacks App Player 591'.split(' ')[-1])
