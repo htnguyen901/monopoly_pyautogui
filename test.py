@@ -1,13 +1,11 @@
-import win32gui
-import pyautogui
+from pywinauto import Application
+from pywinauto import Desktop
+import time
 
-clone_window_list =[]
-for x in pyautogui.getAllWindows():
-    if x.title.startswith('BlueStacks App'):
-        clone_window_list.append(x.title)
-print(clone_window_list)
-# NUM = 590
-# handle = win32gui.FindWindow(0, f'BlueStacks App Player {NUM}')
-# win32gui.SetForegroundWindow(handle)
-
-print('BlueStacks App Player 591'.split(' ')[-1])
+app = Application(backend='uia').start("C:\Program Files\BlueStacks_nxt\HD-MultiInstanceManager.exe").connect(title='BlueStacks multi-instance manager')
+# time.sleep(3)
+# app = Desktop().window(title='BlueStacks App Player 1974')
+#app2 = Desktop().window(title='Untitled - Notepad')
+#app2 = Application(backend='uia').start("notepad.exe").connect(title='Untitled - Notepad')
+print('done')
+app.BlueStacksMultiInstanceManager.print_control_identifiers()
