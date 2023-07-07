@@ -7,16 +7,15 @@ import os
 import math
 import logging
 from os.path import join, isfile
-
 IMG_FOLDER = 'images/'
-INSTANCE_FEED = 160
+INSTANCE_FEED = int(input("How many instance to run? "))
 INSTANCE_PER_RUN = 5
 ROOT_DIR = os.getcwd()
 
 def save_runs_count(count):
     next_fname = join(ROOT_DIR, '.next.txt')
     if isfile(next_fname):
-        with open(next_fname,'w') as f:
+        with open(next_fname, 'w') as f:
             f.write(str(count))
 
 def retrieve_runs_count():
@@ -27,14 +26,14 @@ def retrieve_runs_count():
     return total_count
 
 def create_clone():
-    pyautogui.click(pyautogui.locateCenterOnScreen(f'{IMG_FOLDER}clone_icon.png', grayscale=False, confidence=0.8))
+    pyautogui.click(pyautogui.locateCenterOnScreen(f'{IMG_FOLDER}clone_icon.png', confidence=0.8))
     time.sleep(1)
-    nb_instance_x, nb_instance_y = pyautogui.locateCenterOnScreen(f'{IMG_FOLDER}nb_instances.png', confidence=0.5)
+    nb_instance_x, nb_instance_y = pyautogui.locateCenterOnScreen(f'{IMG_FOLDER}nb_instances.png', confidence=0.8)
     pyautogui.click(nb_instance_x, nb_instance_y)
     time.sleep(1)
     pyautogui.press('left')
     pyautogui.press('del')
-    pyautogui.write('5')
+    pyautogui.write(f'{INSTANCE_PER_RUN}')
     time.sleep(1)
     pyautogui.click(pyautogui.locateCenterOnScreen(f'{IMG_FOLDER}create_button.png', confidence=0.8))
     time.sleep(30)
@@ -91,9 +90,13 @@ def run_automation():
     pyautogui.click(search_x, search_y)
     time.sleep(2)
     pyautogui.write('blue')
+    time.sleep(1)
 
-    #select_x, select_y = pyautogui.locateCenterOnScreen(f'{IMG_FOLDER}select_all.png')
-    pyautogui.click(f'{IMG_FOLDER}select_all.png')
+    select = pyautogui.locateCenterOnScreen(f'{IMG_FOLDER}select_all.png', confidence=0.8)
+    while select is None:
+        print('Cant find Delete All button')
+        select = pyautogui.locateCenterOnScreen(f'{IMG_FOLDER}select_all.png', confidence=0.8)
+    pyautogui.click(select.x, select.y)
 
     start_x, start_y = pyautogui.locateCenterOnScreen(f'{IMG_FOLDER}start_all.png', grayscale=False, confidence=0.8)
     pyautogui.click(start_x, start_y)
@@ -156,7 +159,7 @@ def run_automation():
 def main_run(count_run):
     count_run = retrieve_runs_count()
     Application(backend='uia').start("C:\Program Files\BlueStacks_nxt\HD-MultiInstanceManager.exe", wait_for_idle=False)
-    time.sleep(1)
+    time.sleep(3)
     n_completed = 0
     for i in range(int(math.ceil(INSTANCE_FEED - retrieve_runs_count())/INSTANCE_PER_RUN)):
         print(f'Run {count_run}th')
@@ -177,32 +180,27 @@ def main_run(count_run):
         stop_all_instance()
         time.sleep(1)
         delete_clone()
-        print(f'Completed loop {i}, total instances: {5*(i+1)}')
+        print(f'Completed loop {i}, total instances: {INSTANCE_PER_RUN*(i+1)}')
         print(f'No of count to save {count_run}')
     print(f'Total instances passed: {n_completed}')
     return count_run
 
 trial = 0
-while trial < 4:
-    try:
-        current_total_runs = retrieve_runs_count()
-        print(current_total_runs)
-        run_ups = main_run(current_total_runs)
-        print(f'Successfully completed total of {run_ups} instances for client')
-    except Exception as e:
-        print(f'Program failed {trial + 1} times')
-        trial = trial + 5
-        Application(backend='uia').start("C:\Program Files\BlueStacks_nxt\HD-MultiInstanceManager.exe",
-                                         wait_for_idle=False)
-        stop_all_instance()
-        time.sleep(3)
-        delete_clone()
-        continue
-        # for i in range(4):
-        #     print(f'Program failed {i + 1} times')
-        #     Application(backend='uia').start("C:\Program Files\BlueStacks_nxt\HD-MultiInstanceManager.exe",
-        #                                      wait_for_idle=False)
-        #     stop_all_instance()
-        #     time.sleep(3)
-        #     delete_clone()
-        #     time.sleep(2)
+if INSTANCE_FEED:
+    start_key = input("Press j to run the program ")
+    if start_key == 'j':
+        while trial < 4:
+            try:
+                current_total_runs = retrieve_runs_count()
+                print(current_total_runs)
+                run_ups = main_run(current_total_runs)
+                print(f'Successfully completed total of {run_ups} instances for client')
+            except Exception as e:
+                print(f'Program failed {trial + 1} times')
+                trial = trial + 1
+                Application(backend='uia').start("C:\Program Files\BlueStacks_nxt\HD-MultiInstanceManager.exe",
+                                                 wait_for_idle=False)
+                stop_all_instance()
+                time.sleep(3)
+                delete_clone()
+                continue

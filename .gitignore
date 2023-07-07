@@ -2,3 +2,8 @@ py_venv/
 images/
 test.py
 auto_click.py
+.next.txt
+*.log
+*.spec
+dist/
+build/
